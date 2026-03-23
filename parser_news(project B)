@@ -1,0 +1,54 @@
+import requests
+from bs4 import BeautifulSoup
+
+
+url1 = 'https://www.kolesa.ru/news'
+url2 = 'https://www.autonews.ru/tags/?tag=%D0%9D%D0%BE%D0%B2%D0%BE%D1%81%D1%82%D0%B8'
+
+response1 = requests.get(url1)
+response2 = requests.get(url2)
+
+soup1 = BeautifulSoup(response1.text, 'html.parser')
+soup2 = BeautifulSoup(response2.text, 'html.parser')
+
+titles1 = soup1.find_all('span', class_='post-name')
+links1 = soup1.find_all('a', class_='post-list-item')
+
+titles2 = soup2.find_all('span', class_='item-big__title js-rm-central-column-item-text')
+links2 = soup2.find_all('a', class_='item-big__link js-rm-central-column-item-link')
+
+clean_titles1 = []
+clean_links1 = []
+
+clean_titles2 = []
+clean_links2 = []
+
+for t in titles1:
+    text = t.text.strip()
+    if text:
+        clean_titles1.append(text)
+
+for link in links1:
+    href = link.get("href")
+    if href:
+        clean_links1.append(href)
+
+for t in titles2:
+    text = t.text.strip()
+    if text:
+        clean_titles2.append(text)
+
+for link in links2:
+    href = link.get("href")
+    if href:
+        clean_links2.append(href)
+
+all_titles = clean_titles1 + clean_titles2
+all_links = clean_links1 + clean_links2
+
+print("\n🔥 Свежие новости:\n")
+
+for i in range(len(all_titles)):
+    print(f"{i+1}. {all_titles[i]}")
+    print(all_links[i])
+    print("-" * 50)
